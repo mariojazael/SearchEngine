@@ -11,6 +11,7 @@ public class SearchEngineApp {
     private File inputFile = null;
     private final HashMap<String, String> invertedIndexMap = new HashMap<>();
     private Strategies strategy = Strategies.ALL;
+    private static final String DATA = "--data";
 
     public void start(String[] args) throws IOException {
         readUserInput(args);
@@ -33,7 +34,7 @@ public class SearchEngineApp {
     }
 
     private void readUserInput(String[] args) throws IOException {
-        if(args.length > 0 && args[0].equals("--data")) inputFile = new File(args[1]);
+        if(args.length > 0 && args[0].equals(DATA)) inputFile = new File(args[1]);
         else lines = new String[Integer.parseInt(Scanner.nextLine())];
 
         if(lines != null) {
@@ -75,35 +76,25 @@ public class SearchEngineApp {
             System.out.println(result);
             return;
         }
-        StringBuilder stringBuilder = new StringBuilder();
-        for (String line : lines) {
-            int numberOfMatchingWords = 0;
-            wordsLoop:
-            for (String inputWord : line.split(" ")) {
-                // In case searchWords is null, it means there is only one search word, so
-                // searchWord will be compared against the inputWord only.
-                if(searchWords != null) {
-                    for(String word : searchWords) {
-                        if(inputWord.equalsIgnoreCase(word)){
-                            if(strategy.equals(Strategies.ANY)) {
-                                stringBuilder.append(line).append("\n");
-                                break wordsLoop;
-                            } else if(strategy.equals(Strategies.ALL) || strategy.equals(Strategies.NONE)) {
-                                numberOfMatchingWords++;
-                                break;
-                            }
-                        }
 
+        StringBuilder results = new StringBuilder();
+        linesLoop:
+        for(String line : lines) {
+            int numberOfMatchingWords = 0;
+            for(String keyWord : invertedIndexMap.keySet()) {
+                if(line.contains(keyWord) || line.matches(keyWord)) {
+                    if(strategy == Strategies.ANY) {
+                        results.append(line).append("\n");
+                        continue linesLoop;
                     }
-                } else if (strategy != Strategies.NONE && inputWord.matches(searchWord)) {
-                    stringBuilder.append(line).append("\n");
-                    break;
+                    else if(strategy == Strategies.ALL) numberOfMatchingWords++;
+                    else continue linesLoop;
                 }
             }
-            if(numberOfMatchingWords == 0 && strategy.equals(Strategies.NONE)) stringBuilder.append(line).append("\n");
-            else if(searchWords != null && numberOfMatchingWords == searchWords.length && strategy == Strategies.ALL) stringBuilder.append(line).append("\n");
+            if(numberOfMatchingWords == invertedIndexMap.keySet().size()) results.append(line).append("\n");
+            else if(numberOfMatchingWords == 0 && strategy.equals(Strategies.NONE)) results.append(line).append("\n");
         }
-        if(!stringBuilder.isEmpty()) System.out.println(stringBuilder);
+        if(!results.isEmpty()) System.out.println(results);
         else System.out.println("Not matching people found.");
     }
 

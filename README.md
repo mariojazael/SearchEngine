@@ -1,4 +1,4 @@
-Simple search engine
+# Simple search engine
 
 This application has the purpose of finding a given sequence into several texts, returning the ones
 where the sequence were found. The application starts by reading user's arguments that contains a
@@ -15,10 +15,10 @@ Once the data is read, the program stores every word from every saved line into 
 structure where the key is a word and the value contains the number of the lines where that word
 appears. Once all of this is set, our program displays a menu that looks as follows:
 
-=== Menu ===
-1. Find a person
-2. Print all persons
-0. Exit
+` === Menu ===         `
+` 1. Find a person     `
+` 2. Print all persons `
+` 0. Exit              `
 
 The first option allow us to search for a given key words into the records saved. For example, we can input:
 "Erick Henderson" and depending on the searching strategy our program will modify its behaviour. Before
